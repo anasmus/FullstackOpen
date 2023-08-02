@@ -1,27 +1,24 @@
 import Part from "./Part";
 
-interface Props {
-  part1: string;
-  part2: string;
-  part3: string;
-  exercises1: number;
-  exercises2: number;
-  exercises3: number;
+interface PartObject {
+  name: string;
+  exercises: number;
 }
 
-function Content({
-  part1,
-  part2,
-  part3,
-  exercises1,
-  exercises2,
-  exercises3,
-}: Props) {
+interface Course {
+  name: string;
+  parts: PartObject[];
+}
+interface Props {
+  course: Course;
+}
+
+function Content({ course: { parts } }: Props) {
   return (
     <>
-      <Part part={part1} exercises={exercises1} />
-      <Part part={part2} exercises={exercises2} />
-      <Part part={part3} exercises={exercises3} />
+      <Part part={parts[0]} />
+      <Part part={parts[1]} />
+      <Part part={parts[2]} />
     </>
   );
 }

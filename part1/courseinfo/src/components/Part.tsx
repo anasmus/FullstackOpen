@@ -1,12 +1,16 @@
-interface Props {
-  part: string;
+interface Part {
+  name: string;
   exercises: number;
 }
 
-function Part({ part, exercises }: Props) {
+interface Props {
+  part: Part;
+}
+
+function Part({ part: { name, exercises } }: Props) {
   return (
     <p>
-      {part} {exercises}
+      {name} {exercises}
     </p>
   );
 }

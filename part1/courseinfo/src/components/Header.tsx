@@ -1,9 +1,18 @@
-interface Props {
-  course: string;
+interface Part {
+  name: string;
+  exercises: number;
 }
 
-function Header({ course }: Props) {
-  return <h1>{course}</h1>;
+interface Course {
+  name: string;
+  parts: Part[];
+}
+interface Props {
+  course: Course;
+}
+
+function Header({ course: { name } }: Props) {
+  return <h1>{name}</h1>;
 }
 
 export default Header;
