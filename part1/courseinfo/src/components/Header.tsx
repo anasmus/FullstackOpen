@@ -11,8 +11,8 @@ interface Props {
   course: Course;
 }
 
-function Header({ course: { name } }: Props) {
+const Header = ({ course: { name } }: Props) => {
   return <h1>{name}</h1>;
-}
+};
 
 export default Header;

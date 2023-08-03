@@ -7,12 +7,12 @@ interface Props {
   part: Part;
 }
 
-function Part({ part: { name, exercises } }: Props) {
+const Part = ({ part: { name, exercises } }: Props) => {
   return (
     <p>
       {name} {exercises}
     </p>
   );
-}
+};
 
 export default Part;

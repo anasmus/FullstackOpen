@@ -13,7 +13,7 @@ interface Props {
   course: Course;
 }
 
-function Content({ course: { parts } }: Props) {
+const Content = ({ course: { parts } }: Props) => {
   return (
     <>
       <Part part={parts[0]} />
@@ -21,6 +21,6 @@ function Content({ course: { parts } }: Props) {
       <Part part={parts[2]} />
     </>
   );
-}
+};
 
 export default Content;
