@@ -3,6 +3,7 @@ import Persons from './components/Persons';
 import Input from './components/Input';
 import PersonForm from './components/PersonForm';
 import Button from './components/Button';
+import Message from './components/Message';
 import { getAll, create, remove, update } from './services/persons';
 
 interface Person {
@@ -17,6 +18,8 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [newFilter, setNewFilter] = useState('');
+  const [message, setMessage] = useState<string | null>(null);
+  const [status, setStatus] = useState<'success' | 'fail' | null>(null);
 
   useEffect(() => {
     getAll().then((data) => {
@@ -31,6 +34,15 @@ const App = () => {
           person.name.toLowerCase().startsWith(newFilter.toLowerCase())
         );
 
+  const createMessage = (message: string, status: 'success' | 'fail') => {
+    setMessage(message);
+    setStatus(status);
+    setTimeout(() => {
+      setMessage(null);
+      setStatus(null);
+    }, 5000);
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newName === '' || newNumber === '') return;
@@ -39,7 +51,13 @@ const App = () => {
       handlePersonExists(person);
     } else {
       const newPerson = { name: newName, number: newNumber };
-      create(newPerson).then((data) => setPersons([...persons, data]));
+      create(newPerson).then((data) => {
+        setPersons([...persons, data]);
+        createMessage(
+          `${data.name} added to the Phone Book Successfully`,
+          'success'
+        );
+      });
     }
 
     setNewName('');
@@ -53,9 +71,23 @@ const App = () => {
     if (confirmation) {
       const newPerson = { ...person, number: newNumber };
       const id = person.id;
-      update(id, newPerson).then((data) => {
-        setPersons(persons.map((person) => (person.id !== id ? person : data)));
-      });
+      update(id, newPerson)
+        .then((data) => {
+          setPersons(
+            persons.map((person) => (person.id !== id ? person : data))
+          );
+          createMessage(
+            `${data.name}'s Number Updated Successfully!`,
+            'success'
+          );
+        })
+        .catch(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+          createMessage(
+            `Information of ${person.name} is already removed from the Server`,
+            'fail'
+          );
+        });
     }
   };
 
@@ -73,6 +105,7 @@ const App = () => {
   return (
     <div>
       <h1>Phone Book</h1>
+      <Message message={message} status={status} />
       <Input
         text='Filter With Name: '
         value={newFilter}
