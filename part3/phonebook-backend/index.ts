@@ -1,7 +1,25 @@
 import express from 'express';
+import { request } from 'http';
+import morgan, { TokenIndexer, token } from 'morgan';
 const app = express();
 
 app.use(express.json());
+
+app.use(
+  morgan((tokens, request, response) => {
+    const logObject: (string | undefined)[] = [
+      tokens.method(request, response),
+      tokens.url(request, response),
+      tokens.status(request, response),
+      tokens.res(request, response, 'content-length'),
+      '-',
+      tokens['response-time'](request, response),
+      'ms',
+    ];
+    if (request.method === 'POST') logObject.push(JSON.stringify(request.body));
+    return logObject.join(' ');
+  })
+);
 
 let persons = [
   {
@@ -40,7 +58,12 @@ app.get('/api/persons/:id', (request, response) => {
 });
 
 app.post('/api/persons', (request, response) => {
-  const person = request.body;
+  const person = {
+    name: request.body.name,
+    number: request.body.number,
+    id: 0,
+  };
+
   if (!person.name) return response.status(400).json({ error: 'Name Missing' });
   if (!person.number)
     return response.status(400).json({ error: 'Number Missing' });
