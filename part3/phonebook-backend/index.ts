@@ -1,8 +1,10 @@
 import express from 'express';
-import { request } from 'http';
-import morgan, { TokenIndexer, token } from 'morgan';
+import cors from 'cors';
+import morgan from 'morgan';
+import { type } from 'os';
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.use(
@@ -44,6 +46,8 @@ let persons = [
   },
 ];
 
+type Person = (typeof persons)[0];
+
 app.get('/api/persons', (request, response) => {
   response.json(persons);
 });
@@ -77,14 +81,23 @@ app.post('/api/persons', (request, response) => {
   person.id = maxId + 1;
 
   persons = persons.concat(person);
-  response.json(persons);
+  response.json(person);
 });
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = parseInt(request.params.id);
   persons = persons.filter((person) => person.id !== id);
 
-  response.status(204).end();
+  response.status(200).end();
+});
+
+app.put('/api/persons/:id', (request, response) => {
+  const id = parseInt(request.params.id);
+  const person = request.body as Person;
+  if (!person) return response.status(404).end();
+
+  persons = persons.map((current) => (current.id !== id ? current : person));
+  response.json(person);
 });
 
 app.get('/info', (request, response) => {

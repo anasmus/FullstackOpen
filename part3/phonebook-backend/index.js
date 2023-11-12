@@ -4,8 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const morgan_1 = __importDefault(require("morgan"));
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)((tokens, request, response) => {
     const logObject = [
@@ -68,12 +70,20 @@ app.post('/api/persons', (request, response) => {
     const maxId = persons.reduce((id, person) => (person.id > id ? person.id : id), 0);
     person.id = maxId + 1;
     persons = persons.concat(person);
-    response.json(persons);
+    response.json(person);
 });
 app.delete('/api/persons/:id', (request, response) => {
     const id = parseInt(request.params.id);
     persons = persons.filter((person) => person.id !== id);
-    response.status(204).end();
+    response.status(200).end();
+});
+app.put('/api/persons/:id', (request, response) => {
+    const id = parseInt(request.params.id);
+    const person = request.body;
+    if (!person)
+        return response.status(404).end();
+    persons = persons.map((current) => (current.id !== id ? current : person));
+    response.json(person);
 });
 app.get('/info', (request, response) => {
     response.send(`<div><p>Phone Book has info for ${persons.length} people</p><p>${Date()}</p></div>`);
